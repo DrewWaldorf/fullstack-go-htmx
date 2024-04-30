@@ -6,22 +6,12 @@ import (
 	"log"
 	"net/http"
 
-	//"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/sikozonpc/fullstackgo/handlers"
 	"github.com/sikozonpc/fullstackgo/store"
 )
 
 func main() {
-	// cfg := mysql.Config{
-	// 	User:                 store.Envs.DBUser,
-	// 	Passwd:               store.Envs.DBPassword,
-	// 	Addr:                 store.Envs.DBAddress,
-	// 	DBName:               store.Envs.DBName,
-	// 	Net:                  "tcp",
-	// 	AllowNativePasswords: true,
-	// 	ParseTime:            true,
-	// }
 
 	db, err := store.NewMySQLStorage()
 	if err != nil {

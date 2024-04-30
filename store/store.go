@@ -2,6 +2,7 @@ package store
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/sikozonpc/fullstackgo/types"
 )
@@ -24,21 +25,17 @@ func NewStore(db *sql.DB) *Storage {
 }
 
 func (s *Storage) DeleteCar(id string) error {
-	_, err := s.db.Exec("DELETE FROM cars WHERE id = ?", id)
+	_, err := s.db.Exec("DELETE FROM cars WHERE id = $1", id)
 	return err
 }
 
 func (s *Storage) CreateCar(c *types.Car) (*types.Car, error) {
-	row, err := s.db.Exec("INSERT INTO cars (brand, make, model, year, imageURL) VALUES (?, ?, ?, ?, ?)", c.Brand, c.Make, c.Model, c.Year, c.ImageURL)
+	var id int
+	err := s.db.QueryRow("INSERT INTO cars (brand, make, model, year, imageURL, created) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", c.Brand, c.Make, c.Model, c.Year, c.ImageURL, time.Now()).Scan(&id)
 	if err != nil {
 		return nil, err
 	}
-
-	id, err := row.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-	c.ID = int(id)
+	c.ID = id
 
 	return c, nil
 }
@@ -63,7 +60,7 @@ func (s *Storage) GetCars() ([]types.Car, error) {
 }
 
 func (s *Storage) FindCarsByNameMakeOrBrand(search string) ([]types.Car, error) {
-	rows, err := s.db.Query("SELECT * FROM cars WHERE brand LIKE ? OR model LIKE ? OR make LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	rows, err := s.db.Query("SELECT * FROM cars WHERE LOWER(brand) LIKE LOWER($1) OR LOWER(model) LIKE LOWER($2) OR LOWER(make) LIKE LOWER($3)", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	if err != nil {
 		return nil, err
 	}

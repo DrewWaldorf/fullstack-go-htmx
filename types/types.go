@@ -7,5 +7,5 @@ type Car struct {
 	Model     string `json:"model"`
 	Year      string `json:"year"`
 	ImageURL  string `json:"imageURL"`
-	CreatedAt string `json:"createdAt"`
+	CreatedAt string `json:"created"`
 }

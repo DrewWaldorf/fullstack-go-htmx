@@ -2,9 +2,8 @@ package store
 
 import (
 	"database/sql"
-	//"log"
 	"fmt"
-	//"github.com/go-sql-driver/mysql"
+
 	_ "github.com/lib/pq"
 )
 
@@ -17,12 +16,23 @@ const (
 )
 
 func NewMySQLStorage() (*sql.DB, error) {
+	// connection string
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
+	// open database
 	db, err := sql.Open("postgres", psqlconn)
+	CheckError(err)
+
+	// check db
+	err = db.Ping()
+	CheckError(err)
+
+	fmt.Println("Connected!")
+	return db, nil
+}
+
+func CheckError(err error) {
 	if err != nil {
 		panic(err)
 	}
-
-	return db, nil
 }
